@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, combineLatest } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 
 import { Product } from './product';
 import { Supplier } from '../suppliers/supplier';
 import { SupplierService } from '../suppliers/supplier.service';
+import { ProductCategoryService } from '../product-categories/product-category.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,23 +17,27 @@ export class ProductService {
   private suppliersUrl = this.supplierService.suppliersUrl;
 
   constructor(private http: HttpClient,
+    private productCategoryService: ProductCategoryService,
     private supplierService: SupplierService) { }
 
   $products = this.http.get<Product[]>(this.productsUrl)
       .pipe(
-        map(products =>
-           products.map(
-             product => ({
-               ...product,
-               price: product.price  * 1.5,
-               searchKey: [product.productName]
-             }) as Product
-           )),
         tap(data => console.log('Products: ', JSON.stringify(data))),
         catchError(this.handleError)
       );
   
 
+  productsWithCategory$ = combineLatest([
+    this.$products,
+    this.productCategoryService.productcategories$
+  ]).pipe(
+    map(([products, categories]) => products.map(product => ({
+      ...product,
+      price:product.price * 1.5,
+      category: categories.find(c => product.categoryId === c.id).name,
+      searchKey: [product.productName]
+    }) as Product))
+  )
   private fakeProduct() {
     return {
       id: 42,
