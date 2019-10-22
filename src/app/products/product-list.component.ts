@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
-import { Subscription, EMPTY } from 'rxjs';
+import { Subscription, EMPTY, empty } from 'rxjs';
 
 import { Product } from './product';
 import { ProductService } from './product.service';
 import { catchError, map } from 'rxjs/operators';
+import { ProductCategoryService } from '../product-categories/product-category.service';
 
 @Component({
   templateUrl: './product-list.component.html',
@@ -29,7 +30,17 @@ export class ProductListComponent  {
       this.selectedCategoryId ? product.categoryId ===this.selectedCategoryId : true
       ))
   );
-  constructor(private productService: ProductService) { }
+
+  categories$ = this.productCategoryService.productcategories$.pipe(
+    catchError(err => {
+      this.errorMessage = err;
+      return EMPTY
+    })
+  )
+  constructor(
+    private productService: ProductService,
+    private productCategoryService: ProductCategoryService
+    ) { }
 
  
 
@@ -38,6 +49,6 @@ export class ProductListComponent  {
   }
 
   onSelected(categoryId: string): void {
-    console.log('Not yet implemented');
+    this.selectedCategoryId = +categoryId;
   }
 }
