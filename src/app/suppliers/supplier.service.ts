@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { throwError } from 'rxjs';
+import { throwError, of } from 'rxjs';
+import { map, tap, concatMap, mergeMap } from 'rxjs/operators';
+import { Supplier } from './supplier';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +11,34 @@ import { throwError } from 'rxjs';
 export class SupplierService {
   suppliersUrl = 'api/suppliers';
 
-  constructor(private http: HttpClient) { }
+  supplierWithMap$ = of(1, 5, 8).pipe(
+    map(id => this.http.get<Supplier>(`${this.suppliersUrl}/${id}`))
+  );
+
+  supplierWithConcatMaps$ = of(1, 5, 8)
+    .pipe(
+      tap(id => console.log('concatMap source Observable', id)),
+      concatMap(id => this.http.get<Supplier>(`${this.suppliersUrl}/${id}`))
+    );
+
+    supplierWithMergeMaps$ = of(1, 5, 8)
+    .pipe(
+      tap(id => console.log('cmerge source Observable', id)),
+      mergeMap(id => this.http.get<Supplier>(`${this.suppliersUrl}/${id}`))
+    );
+  constructor(private http: HttpClient) {
+    // this.supplierWithMap$.subscribe(
+    //   item => console.log('map result', item)
+    // );
+
+    this.supplierWithConcatMaps$.subscribe(
+      item => console.log('concatMap result', item)
+    );
+
+    this.supplierWithMergeMaps$.subscribe(
+      item => console.log('mergeMap result', item)
+    );
+  }
 
   private handleError(err: any) {
     // in a real world app, we may send the server to some remote logging infrastructure

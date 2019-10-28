@@ -21,15 +21,15 @@ export class ProductService {
   private productsUrl = 'api/products';
   private suppliersUrl = this.supplierService.suppliersUrl;
 
-  $products = this.http.get<Product[]>(this.productsUrl)
+  products$ = this.http.get<Product[]>(this.productsUrl)
       .pipe(
-        tap(data => console.log('Products: ', JSON.stringify(data))),
+        // tap(data => console.log('Products: ', JSON.stringify(data))),
         catchError(this.handleError)
       );
 
 
   productsWithCategory$ = combineLatest([
-    this.$products,
+    this.products$,
     this.productCategoryService.productcategories$
   ]).pipe(
     map(([products, categories]) => products.map(product => ({

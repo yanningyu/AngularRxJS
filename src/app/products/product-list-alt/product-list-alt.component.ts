@@ -15,10 +15,10 @@ export class ProductListAltComponent  {
   pageTitle = 'Products';
   private errorMessageSubject = new Subject<string>();
   errorMessage$ = this.errorMessageSubject.asObservable();
-  products$ = this.productService.$products.pipe(
+  products$ = this.productService.products$.pipe(
     catchError(err => {
       this.errorMessageSubject.next(err);
-      return EMPTY
+      return EMPTY;
     })
   );
 
