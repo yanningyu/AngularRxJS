@@ -2,7 +2,8 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 import { ProductService } from '../product.service';
 import { EMPTY, Subject } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
+import { Supplier } from 'src/app/suppliers/supplier';
 
 @Component({
   selector: 'pm-product-detail',

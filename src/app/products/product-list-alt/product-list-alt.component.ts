@@ -22,7 +22,7 @@ export class ProductListAltComponent  {
     })
   );
 
-  selectedProduct$ = this.productService.selectProduct$;
+  selectedProduct$ = this.productService.selectedProduct$;
   constructor(private productService: ProductService) { }
 
 

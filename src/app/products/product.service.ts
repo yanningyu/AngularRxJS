@@ -63,7 +63,7 @@ export class ProductService {
     this.selectedProduct$,
     this.supplierService.suppliers$
   ]).pipe(
-    tap(([selectedProduct, suppliers]) => console.log('trigger selectedProduct suppliers')),
+    tap(([selectedProduct, suppliers]) => console.log('trigger selectedProduct suppliers', JSON.stringify(selectedProduct))),
     map(([selectedProduct, suppliers]) =>
     suppliers.filter(supplier => selectedProduct.supplierIds.includes(supplier.id)))
   );

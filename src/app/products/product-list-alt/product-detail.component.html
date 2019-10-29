@@ -33,7 +33,7 @@
 
     <div class="table-responsive">
       <table class="table mb-0"
-             *ngIf="productSuppliers">
+             *ngIf="productSuppliers$ | async as productSuppliers">
         <thead>
           <tr>
             <th>Supplier</th>
@@ -50,28 +50,11 @@
         </tbody>
       </table>
     </div>
-
+    
   </div>
 </div>
 
-<div class="table-responsive">
-  <table class="table mb-0" *ngIf="productSuppliers$ | async as productSupliers">
-    <thead>
-      <tr>
-        <th>Supplier</th>
-        <th>Cost</th>
-        <th>Minimum Quantity</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let supplier of productSupliers">
-        <td>{{supplier.name}}</td>
-        <td>{{supplier.cost | currency: "USD":"symbol":"1.2-2"}}</td>
-        <td>{{supplier.minQuantity}}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+
 <div class="alert alert-danger"
      *ngIf="errorMessage">
   {{errorMessage}}
