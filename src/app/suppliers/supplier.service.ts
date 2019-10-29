@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { throwError, of } from 'rxjs';
-import { map, tap, concatMap, mergeMap } from 'rxjs/operators';
+import { map, tap, concatMap, mergeMap, switchMap, shareReplay, catchError } from 'rxjs/operators';
 import { Supplier } from './supplier';
 
 @Injectable({
@@ -11,6 +11,12 @@ import { Supplier } from './supplier';
 export class SupplierService {
   suppliersUrl = 'api/suppliers';
 
+  suppliers$ = this.http.get<Supplier[]>(this.suppliersUrl)
+  .pipe(
+    tap(data => console.log('suppliers', JSON.stringify(data))),
+    shareReplay(1),
+    catchError(this.handleError)
+  );
   supplierWithMap$ = of(1, 5, 8).pipe(
     map(id => this.http.get<Supplier>(`${this.suppliersUrl}/${id}`))
   );
@@ -21,23 +27,31 @@ export class SupplierService {
       concatMap(id => this.http.get<Supplier>(`${this.suppliersUrl}/${id}`))
     );
 
-    supplierWithMergeMaps$ = of(1, 5, 8)
+  supplierWithMergeMaps$ = of(1, 5, 8)
     .pipe(
       tap(id => console.log('cmerge source Observable', id)),
       mergeMap(id => this.http.get<Supplier>(`${this.suppliersUrl}/${id}`))
+    );
+
+  suppliersWithSwitchMap$ = of(1, 5, 8)
+    .pipe(
+      tap(id => console.log('switchMap source Observable', id)),
+      switchMap(id => this.http.get<Supplier>(`${this.suppliersUrl}/${id}`))
     );
   constructor(private http: HttpClient) {
     // this.supplierWithMap$.subscribe(
     //   item => console.log('map result', item)
     // );
 
-    this.supplierWithConcatMaps$.subscribe(
-      item => console.log('concatMap result', item)
-    );
+    // this.supplierWithConcatMaps$.subscribe(
+    //   item => console.log('concatMap result', item)
+    // );
 
-    this.supplierWithMergeMaps$.subscribe(
-      item => console.log('mergeMap result', item)
-    );
+    // this.supplierWithMergeMaps$.subscribe(
+    //   item => console.log('mergeMap result', item)
+    // );
+    // this.suppliersWithSwitchMap$.subscribe(
+    //   item => console.log('switchMap result', item));
   }
 
   private handleError(err: any) {
